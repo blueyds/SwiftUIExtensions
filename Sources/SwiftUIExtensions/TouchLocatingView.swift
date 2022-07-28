@@ -2,28 +2,31 @@
 import SwiftUI
 
 #if os(iOS) || os(watchOS) || os(tvOS)
-file typealias Representable = UIViewRepresentable
+fileprivate typealias Representable = UIViewRepresentable
 #else
-file typealias Representable = NSViewRepresentable
+fileprivate typealias Representable = NSViewRepresentable
 #endif
-
-// Our SwiftUI wrapper view
-public struct TouchLocatingView: Representable {
-	// The types of touches users want to be notified about
-	public struct TouchType: OptionSet{
-		let rawValue: Int
-
-		public static let started = TouchType(rawValue: 1 << 0)
-		public static let moved = TouchType(rawValue: 1 << 1)
-		public static let ended = TouchType(rawValue: 1 << 2)
-		public static let all: TouchType = [.started, .moved, .ended]
+public struct TouchLocatingTouchType: OptionSet{
+	public let rawValue: Int
+	public init(rawValue: Int){
+		self.rawValue = rawValue
 	}
+
+	public static let started = TouchLocatingTouchType(rawValue: 1 << 0)
+	public static let moved = TouchLocatingTouchType(rawValue: 1 << 1)
+	public static let ended = TouchLocatingTouchType(rawValue: 1 << 2)
+	public static let all: TouchLocatingTouchType = [.started, .moved, .ended]
+}
+// Our SwiftUI wrapper view
+struct TouchLocatingView: Representable {
+	// The types of touches users want to be notified about
+
 
 	// A closure to call when touch data has arrived
 	var onUpdate: (CGPoint) -> Void
 
 	// The list of touch types to notified of
-	var types = TouchType.all
+	var types = TouchLocatingTouchType.all
 
 	// Whether touch information should continue after the user's finger
 	// has left the view
@@ -38,10 +41,10 @@ public struct TouchLocatingView: Representable {
 	func updateUIView(_ uiView: TouchLocatingInternalView, context: Context){}
 #else
 	typealias ViewType = NSView
-	func makeNSView(context: Context) -> TouchLocatingInternalView {
+	 func makeNSView(context: Context) -> TouchLocatingInternalView {
 		makeView()
 	}
-	func updateNSView(_ nsView: TouchLocatingInternalView, context: Context) {
+	 func updateNSView(_ nsView: TouchLocatingInternalView, context: Context) {
 
 	}
 #endif
@@ -57,7 +60,7 @@ public struct TouchLocatingView: Representable {
 	class TouchLocatingInternalView: ViewType {
 		// Internal copies of our settings
 		var onUpdate: ((CGPoint) -> Void)?
-		var touchTypes: TouchLocatingView.TouchType = .all
+		var touchTypes: TouchLocatingTouchType = .all
 		var limitToBounds = true
 
 		// Our main initializer
@@ -87,7 +90,7 @@ public struct TouchLocatingView: Representable {
 			send(location, forEvent: .ended)
 		}
 #endif
-		private func send(_ location: CGPoint, forEvent event: TouchLocatingView.TouchType){
+		private func send(_ location: CGPoint, forEvent event: TouchLocatingTouchType){
 			guard touchTypes.contains(event) else { return }
 			if limitToBounds == false ||
 				bounds.contains(location){
@@ -101,7 +104,7 @@ public struct TouchLocatingView: Representable {
 }
 
 struct TouchLocater: ViewModifier{
-	var type: TouchLocatingView.TouchType = .all
+	var type: TouchLocatingTouchType = .all
 	var limitToBounds = true
 	let perform: (CGPoint) -> Void
 
@@ -113,7 +116,7 @@ struct TouchLocater: ViewModifier{
 	}
 }
 extension View {
-	public func onTouch(type: TouchLocatingView.TouchType = .all, limitToBounds: Bool = true, perform: @escaping (CGPoint) -> Void) -> some View {
+	public func onTouch(type: TouchLocatingTouchType = .all, limitToBounds: Bool = true, perform: @escaping (CGPoint) -> Void) -> some View {
 	self.modifier(TouchLocater(type: type, limitToBounds: limitToBounds, perform: perform))
 	}
 }
