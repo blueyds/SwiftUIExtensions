@@ -1,12 +1,12 @@
 import SwiftUI
 //import KeyboardShortcuts
 
-struct KeyDownModifier: ViewModifier {
-    var onKeyDown: (UIKey)-> Void
-    init(_ keyDownCallback: @escaping (UIKey)-> Void){
+public struct KeyDownModifier: ViewModifier {
+    public var onKeyDown: (UIKey)-> Void
+    public init(_ keyDownCallback: @escaping (UIKey)-> Void){
         onKeyDown = keyDownCallback
     }
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .background(KeyDownRepresentable(onKeyDown: onKeyDown))
     }
