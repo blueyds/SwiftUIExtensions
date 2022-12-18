@@ -15,7 +15,7 @@ public struct KeyDownModifier: ViewModifier {
 private struct KeyDownRepresentable: UIViewRepresentable {
     var onKeyDown: (UIKey)-> Void
     func makeUIView(context: Context) -> some UIView {
-        let view = KeyAwareuiView()
+        let view = KeyDownView()
         view.onKeyDown = self.onKeyDown
         view.becomeFirstResponder()
 //        print("\(view.isFirstResponder)")
