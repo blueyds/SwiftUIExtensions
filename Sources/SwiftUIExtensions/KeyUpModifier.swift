@@ -15,7 +15,7 @@ public struct KeyUpModifier: ViewModifier {
 private struct KeyUpRepresentable: UIViewRepresentable {
     var onKeyUp: (UIKey)-> Void
     func makeUIView(context: Context) -> some UIView {
-        let view = KeyAwareuiView()
+        let view = KeyUpView()
         view.onKeyUp = self.onKeyUp
         view.becomeFirstResponder()
         //        print("\(view.isFirstResponder)")
